@@ -1,0 +1,61 @@
+services:
+  - type: web
+    name: lms-laravel
+    env: docker
+    dockerfilePath: ./Dockerfile
+    plan: free
+    envVars:
+      - key: APP_ENV
+        value: production
+      - key: APP_DEBUG
+        value: false
+      - key: LOG_CHANNEL
+        value: stderr
+      - key: DB_CONNECTION
+        value: pgsql
+      - key: DB_HOST
+        fromDatabase:
+          name: lms-db
+          property: host
+      - key: DB_PORT
+        fromDatabase:
+          name: lms-db
+          property: port
+      - key: DB_DATABASE
+        fromDatabase:
+          name: lms-db
+          property: database
+      - key: DB_USERNAME
+        fromDatabase:
+          name: lms-db
+          property: user
+      - key: DB_PASSWORD
+        fromDatabase:
+          name: lms-db
+          property: password
+      - key: FILESYSTEM_DISK
+        value: r2
+      - key: R2_KEY
+        sync: false
+      - key: R2_SECRET
+        sync: false
+      - key: R2_BUCKET
+        value: lms-assets
+      - key: R2_ENDPOINT
+        sync: false
+      - key: R2_PUBLIC_URL
+        sync: false
+    buildCommand: |
+      composer install --no-dev --optimize-autoloader --no-interaction
+      php artisan config:cache
+      php artisan route:cache
+      php artisan view:cache
+    startCommand: |
+      php artisan migrate --force
+      /usr/bin/supervisord -c /etc/supervisor/conf.d/supervisord.conf
+
+databases:
+  - name: lms-db
+    plan: free
+    databaseName: lms
+    user: lms_user
