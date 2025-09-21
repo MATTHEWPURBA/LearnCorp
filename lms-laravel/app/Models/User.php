@@ -97,6 +97,29 @@ class User extends Authenticatable
         return $this->hasMany(Certificate::class);
     }
 
+    // Gamification relationships
+    public function points(): HasMany
+    {
+        return $this->hasMany(UserPoints::class);
+    }
+
+    public function badges(): BelongsToMany
+    {
+        return $this->belongsToMany(Badge::class, 'user_badges')
+                    ->withPivot(['course_id', 'earned_at'])
+                    ->withTimestamps();
+    }
+
+    public function userBadges(): HasMany
+    {
+        return $this->hasMany(UserBadge::class);
+    }
+
+    public function achievements(): HasMany
+    {
+        return $this->hasMany(Achievement::class);
+    }
+
     public function isEnrolledIn(Course $course): bool
     {
         return $this->enrolledCourses()->where('course_id', $course->id)->exists();
@@ -105,5 +128,53 @@ class User extends Authenticatable
     public function getEnrollmentFor(Course $course): ?Enrollment
     {
         return $this->enrollments()->where('course_id', $course->id)->first();
+    }
+
+    // Gamification methods
+    public function getTotalPoints(): int
+    {
+        return $this->points()->sum('points');
+    }
+
+    public function getCoursePoints(Course $course): int
+    {
+        return $this->points()->where('course_id', $course->id)->sum('points');
+    }
+
+    public function addPoints(int $points, string $source, ?Course $course = null, ?Quiz $quiz = null, ?string $description = null): UserPoints
+    {
+        return $this->points()->create([
+            'points' => $points,
+            'source' => $source,
+            'course_id' => $course?->id,
+            'quiz_id' => $quiz?->id,
+            'description' => $description,
+        ]);
+    }
+
+    public function hasBadge(Badge $badge): bool
+    {
+        return $this->badges()->where('badge_id', $badge->id)->exists();
+    }
+
+    public function earnBadge(Badge $badge, ?Course $course = null): UserBadge
+    {
+        return $this->userBadges()->create([
+            'badge_id' => $badge->id,
+            'course_id' => $course?->id,
+            'earned_at' => now(),
+        ]);
+    }
+
+    public function addAchievement(string $type, string $title, string $description, int $points = 0, array $metadata = []): Achievement
+    {
+        return $this->achievements()->create([
+            'type' => $type,
+            'title' => $title,
+            'description' => $description,
+            'points_earned' => $points,
+            'metadata' => $metadata,
+            'achieved_at' => now(),
+        ]);
     }
 }

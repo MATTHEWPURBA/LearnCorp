@@ -197,6 +197,24 @@ class AdvancedPhpCourseSeeder extends Seeder
                         ['text' => 'Match Expression', 'is_correct' => false],
                         ['text' => 'Attributes', 'is_correct' => false],
                     ]
+                ],
+                [
+                    'prompt' => 'What is a match expression in PHP 8?',
+                    'options' => [
+                        ['text' => 'A more powerful alternative to switch statements', 'is_correct' => true],
+                        ['text' => 'A way to create objects', 'is_correct' => false],
+                        ['text' => 'A type declaration feature', 'is_correct' => false],
+                        ['text' => 'A caching mechanism', 'is_correct' => false],
+                    ]
+                ],
+                [
+                    'prompt' => 'Which PHP 8.1 feature provides a way to define named constants?',
+                    'options' => [
+                        ['text' => 'Union Types', 'is_correct' => false],
+                        ['text' => 'Enums', 'is_correct' => true],
+                        ['text' => 'Named Arguments', 'is_correct' => false],
+                        ['text' => 'Match Expression', 'is_correct' => false],
+                    ]
                 ]
             ]
         ];
