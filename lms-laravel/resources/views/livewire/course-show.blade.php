@@ -42,11 +42,18 @@
                                 <button wire:click="selectLesson({{ $lesson->id }})"
                                         class="w-full text-left p-3 rounded-lg border transition-colors {{ $currentLessonId == $lesson->id ? 'bg-blue-50 border-blue-200 text-blue-900' : 'hover:bg-gray-50 border-gray-200' }}">
                                     <div class="flex items-center justify-between">
-                                        <div>
-                                            <h3 class="font-medium">{{ $lesson->title }}</h3>
+                                        <div class="flex-1">
+                                            <div class="flex items-center gap-2">
+                                                <h3 class="font-medium">{{ $lesson->title }}</h3>
+                                                @if($lesson->youtube_video_id)
+                                                    <svg class="w-4 h-4 text-red-500" fill="currentColor" viewBox="0 0 20 20">
+                                                        <path d="M2 6a2 2 0 012-2h6a2 2 0 012 2v8a2 2 0 01-2 2H4a2 2 0 01-2-2V6zM14.553 7.106A1 1 0 0014 8v4a1 1 0 00.553.894l2 1A1 1 0 0018 13V7a1 1 0 00-1.447-.894l-2 1z"></path>
+                                                    </svg>
+                                                @endif
+                                            </div>
                                             <p class="text-sm text-gray-500">{{ $lesson->description ?? 'No description' }}</p>
                                         </div>
-                                        <div class="text-xs text-gray-400">
+                                        <div class="text-xs text-gray-400 ml-2">
                                             {{ $lesson->duration ?? 'N/A' }}
                                         </div>
                                     </div>
@@ -87,11 +94,38 @@
 
             <!-- Main Content Area -->
             <div class="lg:col-span-2">
-                @if($currentLesson)
+                @if($this->currentLesson)
                     <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-                        <h2 class="text-2xl font-bold text-gray-900 mb-4">{{ $currentLesson->title }}</h2>
+                        <h2 class="text-2xl font-bold text-gray-900 mb-4">{{ $this->currentLesson->title }}</h2>
+                        
+                        <!-- YouTube Video Section -->
+                        @if($this->currentLesson->youtube_video_id)
+                            <div class="mb-6">
+                                <h3 class="text-lg font-semibold text-gray-900 mb-3">Video Tutorial</h3>
+                                <div class="relative w-full" style="padding-bottom: 56.25%;">
+                                    <iframe 
+                                        class="absolute top-0 left-0 w-full h-full rounded-lg"
+                                        src="{{ $this->currentLesson->youtube_embed_url }}"
+                                        title="{{ $this->currentLesson->title }}"
+                                        frameborder="0"
+                                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                        allowfullscreen>
+                                    </iframe>
+                                </div>
+                                <p class="text-sm text-gray-600 mt-2">
+                                    <span class="inline-flex items-center">
+                                        <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                            <path d="M2 6a2 2 0 012-2h6a2 2 0 012 2v8a2 2 0 01-2 2H4a2 2 0 01-2-2V6zM14.553 7.106A1 1 0 0014 8v4a1 1 0 00.553.894l2 1A1 1 0 0018 13V7a1 1 0 00-1.447-.894l-2 1z"></path>
+                                        </svg>
+                                        Duration: {{ $this->currentLesson->duration ?? 'N/A' }}
+                                    </span>
+                                </p>
+                            </div>
+                        @endif
+                        
+                        <!-- Lesson Content -->
                         <div class="prose max-w-none">
-                            {!! $currentLesson->content ?? '<p>Lesson content will be available soon.</p>' !!}
+                            {!! $this->currentLesson->content ?? '<p>Lesson content will be available soon.</p>' !!}
                         </div>
                     </div>
                 @else

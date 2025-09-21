@@ -13,6 +13,8 @@ class Lesson extends Model
         'course_id',
         'title',
         'description',
+        'content',
+        'duration',
         'youtube_video_id',
         'asset_path',
         'order',
